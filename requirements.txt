@@ -5,3 +5,4 @@ plotly
 requests
 google-auth
 supabase
+feedparser

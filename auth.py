@@ -69,8 +69,16 @@ def _friendly(err: Exception) -> str:
     return f"Something went wrong: {msg}"
 
 
+def get_client():
+    """The signed-in user's own Supabase client (used for subscription calls)."""
+    return _client()
+
+
 def _set_user(user) -> None:
     st.session_state["auth_user"] = {"id": user.id, "email": user.email}
+    # never carry another user's cached plan into this session
+    for k in ("sub", "sub_error"):
+        st.session_state.pop(k, None)
 
 
 # --------------------------------------------------------------------------
@@ -116,7 +124,7 @@ def sign_out() -> None:
         _client().auth.sign_out()
     except Exception:
         pass  # always clear the local session, even if the network call fails
-    for k in ("auth_user", "sb_client", "auth_view", "ran"):
+    for k in ("auth_user", "sb_client", "auth_view", "ran", "sub", "sub_error", "sub_flash"):
         st.session_state.pop(k, None)
 
 
